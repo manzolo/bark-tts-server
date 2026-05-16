@@ -1,0 +1,12 @@
+services:
+  bark:
+    image: manzolo/bark-docker
+    container_name: bark
+    ports:
+      - "8000:8000"  # Esponi la porta 8000 per l'API
+    runtime: nvidia  # Usa la GPU NVIDIA
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    volumes:
+      - ./cache:/root/.cache  # Monta la directory 'cache' del tuo host alla cartella '.cache' del container
+    restart: no

@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.env
+
+# HuggingFace model cache (multi-GB, downloaded on first run)
+cache/
+
+# Generated audio artifacts
+output.wav
+generated_audio.wav

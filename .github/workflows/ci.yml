@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  docker-build:
+    name: Docker build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: true
+          tags: bark-docker:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  smoke-test:
+    name: Smoke test (bark-small, CPU)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          cache: pip
+
+      - name: Install system deps
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg libsndfile1
+
+      - name: Install Python deps
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install fastapi uvicorn soundfile httpx
+
+      - name: Cache HuggingFace models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-bark-small-v1
+          restore-keys: hf-bark-small-
+
+      - name: Run smoke test
+        env:
+          BARK_MODEL: suno/bark-small
+          # Forza CPU: i runner gratuiti non hanno GPU.
+          CUDA_VISIBLE_DEVICES: ""
+          # Limita i thread per evitare OOM sui runner da 7GB.
+          OMP_NUM_THREADS: "2"
+          MKL_NUM_THREADS: "2"
+        run: python tests/smoke_test.py
