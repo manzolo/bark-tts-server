@@ -1,4 +1,4 @@
-[![CI](https://github.com/manzolo/bark-docker/actions/workflows/ci.yml/badge.svg)](https://github.com/manzolo/bark-docker/actions/workflows/ci.yml)
+[![CI](https://github.com/manzolo/bark-tts-server/actions/workflows/ci.yml/badge.svg)](https://github.com/manzolo/bark-tts-server/actions/workflows/ci.yml)
 
 docker build -t manzolo/bark-docker .
 docker run --gpus all -v ./cache:/root/.cache --name bark -p 8000:8000 manzolo/bark-docker
