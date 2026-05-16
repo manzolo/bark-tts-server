@@ -8,7 +8,19 @@ Send text, get a WAV back.
 
 ## Quick start
 
-### Docker Compose (recommended)
+### With Make (recommended)
+
+```bash
+make build      # build the image
+make up         # start the service
+make generate TEXT="Ciao, questo è un test."
+make logs       # tail logs
+make down       # stop
+```
+
+Run `make` (or `make help`) for the full list of targets.
+
+### Docker Compose
 
 ```bash
 docker compose up -d
@@ -21,7 +33,7 @@ docker build -t manzolo/bark-docker .
 docker run --gpus all -v ./cache:/root/.cache -p 8000:8000 --name bark manzolo/bark-docker
 ```
 
-### Generate audio
+### Generate audio (raw curl)
 
 ```bash
 curl -X POST http://localhost:8000/generate-audio/ \
@@ -52,7 +64,7 @@ Run the smoke test locally (uses `suno/bark-small` on CPU):
 
 ```bash
 pip install -r requirements.txt fastapi uvicorn soundfile httpx
-BARK_MODEL=suno/bark-small CUDA_VISIBLE_DEVICES="" python tests/smoke_test.py
+make test
 ```
 
 The same test runs in CI on every push — see `.github/workflows/ci.yml`.
